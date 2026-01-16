@@ -18,15 +18,11 @@ jobs:
       - name: Copy Jar to Deployment Folder
         run: |
           # Create directory if it doesn't exist (just in case)
-          sudo mkdir -p /opt/mo-stock-keeper
+          mkdir -p /opt/mo-stock-keeper
           
           # Copy the jar from the repo to the target folder
           # Assumes the jar is in the root of your repo. Adjust path if inside a 'target/' folder.
-          sudo cp mo-stock-keeper-0.0.1-SNAPSHOT.jar /opt/mo-stock-keeper/
-          
-          # Ensure permissions are correct
-          sudo chown glen:glen /opt/mo-stock-keeper/mo-stock-keeper-0.0.1-SNAPSHOT.jar
-          sudo chmod 755 /opt/mo-stock-keeper/mo-stock-keeper-0.0.1-SNAPSHOT.jar
+          cp mo-stock-keeper-0.0.1-SNAPSHOT.jar /opt/mo-stock-keeper/
 
       - name: Restart Service
         run: |
