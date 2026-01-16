@@ -1,0 +1,37 @@
+name: Deploy MO Stock Keeper
+
+on:
+  workflow_dispatch: 
+  push:
+    branches: [ "main" ]
+    paths:
+      - '**.jar' # Only trigger if a jar file is updated
+
+jobs:
+  deploy:
+    runs-on: self-hosted # This tells GitHub to use YOUR server, not their cloud runners
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Copy Jar to Deployment Folder
+        run: |
+          # Create directory if it doesn't exist (just in case)
+          sudo mkdir -p /opt/mo-stock-keeper
+          
+          # Copy the jar from the repo to the target folder
+          # Assumes the jar is in the root of your repo. Adjust path if inside a 'target/' folder.
+          sudo cp mo-stock-keeper-0.0.1-SNAPSHOT.jar /opt/mo-stock-keeper/
+          
+          # Ensure permissions are correct
+          sudo chown glen:glen /opt/mo-stock-keeper/mo-stock-keeper-0.0.1-SNAPSHOT.jar
+          sudo chmod 755 /opt/mo-stock-keeper/mo-stock-keeper-0.0.1-SNAPSHOT.jar
+
+      - name: Restart Service
+        run: |
+          sudo systemctl restart mo-stock-keeper
+          
+      - name: Check Status
+        run: |
+          systemctl status mo-stock-keeper --no-pager
