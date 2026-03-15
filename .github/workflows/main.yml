@@ -1,37 +1,75 @@
-name: Build and Deploy Inventory Tracker
+name: Deploy MO Stock Keeper
+
+
 
 on:
+
   workflow_dispatch: 
+
   push:
+
     branches: [ "main" ]
 
+    paths:
+
+      - '**.jar' # Only trigger if a jar file is updated
+
+
+
 jobs:
-  build-and-deploy:
-    runs-on: self-hosted
+
+  deploy:
+
+    runs-on: self-hosted # This tells GitHub to use YOUR server, not their cloud runners
+
+    
 
     steps:
-      - name: Environment Check
-        run: |
-          whoami
-          java -version
-          mvn -version
-          
-      - name: Checkout Code
-        uses: actions/checkout@v4
 
-      - name: Build with Maven (Prod Profile)
-        # Uses the Maven installation already on your server
-        run: mvn clean package -Pprod -DskipTests
+      - name: Who is running this?
+
+        run: |
+
+          whoami
+
+          id
+
+          
+
+      - name: Checkout Code
+
+        uses: actions/checkout@v3
+
+
 
       - name: Copy Jar to Deployment Folder
+
         run: |
-          sudo mkdir -p /opt/inventory-tracker
-          sudo cp target/MO-Inventory-tracker-0.0.1-SNAPSHOT.jar /opt/inventory-tracker/inventory-tracker-0.0.1-SNAPSHOT.jar
+
+          # Create directory if it doesn't exist (just in case)
+
+          mkdir -p /opt/mo-stock-keeper
+
+          
+
+          # Copy the jar from the repo to the target folder
+
+          # Assumes the jar is in the root of your repo. Adjust path if inside a 'target/' folder.
+
+          cp mo-stock-keeper-0.0.1-SNAPSHOT.jar /opt/mo-stock-keeper/
+
+
 
       - name: Restart Service
+
         run: |
-          sudo systemctl restart inventory-tracker.service
+
+          sudo /usr/bin/systemctl restart mo-stock-keeper
+
           
+
       - name: Check Status
+
         run: |
-          systemctl status inventory-tracker.service --no-pager
+
+          systemctl status mo-stock-keeper --no-pager
